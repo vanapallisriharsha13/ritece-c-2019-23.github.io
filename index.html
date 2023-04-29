@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web:200,300,400,700">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<meta name="viewport" content="width=device-width">
+    <title>ECE-C 2019-2023</title>
+</head>
+<body>
+    <script>
+(function($) {
+  "use strict";
+  $.fn.sliderResponsive = function(settings) {
+    
+    var set = $.extend( 
+      {
+        slidePause: 5000,
+        fadeSpeed: 800,
+        autoPlay: "on",
+        showArrows: "off", 
+        hideDots: "off", 
+        hoverZoom: "on",
+        titleBarTop: "off"
+      },
+      settings
+    ); 
+    
+    var $slider = $(this);
+    var size = $slider.find("> div").length; //number of slides
+    var position = 0; // current position of carousal
+    var sliderIntervalID; // used to clear autoplay
+      
+    // Add a Dot for each slide
+    $slider.append("<ul></ul>");
+    $slider.find("> div").each(function(){
+      $slider.find("> ul").append('<li></li>');
+    });
+      
+    // Put .show on the first Slide
+    $slider.find("div:first-of-type").addClass("show");
+      
+    // Put .showLi on the first dot
+    $slider.find("li:first-of-type").addClass("showli")
+
+     //fadeout all items except .show
+    $slider.find("> div").not(".show").fadeOut();
+    
+    // If Autoplay is set to 'on' than start it
+    if (set.autoPlay === "on") {
+        startSlider(); 
+    } 
+    
+    // If showarrows is set to 'on' then don't hide them
+    if (set.showArrows === "on") {
+        $slider.addClass('showArrows'); 
+    }
+    
+    // If hideDots is set to 'on' then hide them
+    if (set.hideDots === "on") {
+        $slider.addClass('hideDots'); 
+    }
+    
+    // If hoverZoom is set to 'off' then stop it
+    if (set.hoverZoom === "off") {
+        $slider.addClass('hoverZoomOff'); 
+    }
+    
+    // If titleBarTop is set to 'on' then move it up
+    if (set.titleBarTop === "on") {
+        $slider.addClass('titleBarTop'); 
+    }
+
+    // function to start auto play
+    function startSlider() {
+      sliderIntervalID = setInterval(function() {
+        nextSlide();
+      }, set.slidePause);
+    }
+    
+    // on mouseover stop the autoplay
+    $slider.mouseover(function() {
+      if (set.autoPlay === "on") {
+        clearInterval(sliderIntervalID);
+      }
+    });
+      
+    // on mouseout starts the autoplay
+    $slider.mouseout(function() {
+      if (set.autoPlay === "on") {
+        startSlider();
+      }
+    });
+
+    //on right arrow click
+    $slider.find("> .right").click(nextSlide)
+
+    //on left arrow click
+    $slider.find("> .left").click(prevSlide);
+      
+    // Go to next slide
+    function nextSlide() {
+      position = $slider.find(".show").index() + 1;
+      if (position > size - 1) position = 0;
+      changeCarousel(position);
+    }
+    
+    // Go to previous slide
+    function prevSlide() {
+      position = $slider.find(".show").index() - 1;
+      if (position < 0) position = size - 1;
+      changeCarousel(position);
+    }
+
+    //when user clicks slider button
+    $slider.find(" > ul > li").click(function() {
+      position = $(this).index();
+      changeCarousel($(this).index());
+    });
+
+    //this changes the image and button selection
+    function changeCarousel() {
+      $slider.find(".show").removeClass("show").fadeOut();
+      $slider
+        .find("> div")
+        .eq(position)
+        .fadeIn(set.fadeSpeed)
+        .addClass("show");
+      // The Dots
+      $slider.find("> ul").find(".showli").removeClass("showli");
+      $slider.find("> ul > li").eq(position).addClass("showli");
+    }
+
+    return $slider;
+  };
+})(jQuery);
+
+
+ 
+//////////////////////////////////////////////
+// Activate each slider - change options
+//////////////////////////////////////////////
+$(document).ready(function() {
+  
+  $("#slider1").sliderResponsive({
+  // Using default everything
+    // slidePause: 5000,
+    // fadeSpeed: 800,
+    // autoPlay: "on",
+    // showArrows: "off", 
+    // hideDots: "off", 
+    // hoverZoom: "on", 
+    // titleBarTop: "off"
+  });
+  
+  $("#slider2").sliderResponsive({
+    fadeSpeed: 300,
+    autoPlay: "off",
+    showArrows: "on",
+    hideDots: "on"
+  });
+  
+  $("#slider3").sliderResponsive({
+    hoverZoom: "off",
+    hideDots: "on"
+  });
+  
+}); 
+
+
+</script>
+    <style> .slider, 
+.slider > div {
+    /* Images default to Center Center. Maybe try 'center top'? */
+    background-position: center center;
+    display: block;
+    width: 100%;
+    height: 500px;
+    /* height: 100vh; *//* If you want fullscreen */
+    position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #000;
+    overflow: hidden;
+    -moz-transition: transform .4s;
+    -o-transition: transform .4s;
+    -webkit-transition: transform .4s;
+    transition: transform .4s;
+}
+
+.slider > div {
+    position: absolute;
+}
+
+.slider > i {
+    color: #5bbd72;
+    position: absolute;
+    font-size: 60px;
+    margin: 20px;
+    top: 40%;
+    text-shadow: 0 10px 2px #223422;
+    transition: .3s;
+    width: 30px;
+    padding: 10px 13px;
+    background: #fff;
+    background: rgba(255, 255, 255, .3);
+    cursor: pointer;
+    line-height: 0;
+    box-sizing: content-box;
+    border-radius: 3px;
+    z-index: 4;
+}
+
+.slider > i svg {
+    margin-top: 3px;
+}
+
+.slider > .left {
+    left: -100px;
+}
+.slider > .right {
+    right: -100px;
+}
+.slider:hover > .left {
+    left: 0;
+}
+.slider:hover > .right {
+    right: 0;
+}
+
+.slider > i:hover {
+    background:#fff;
+    background: rgba(255, 255, 255, .8);
+    transform: translateX(-2px);
+}
+
+.slider > i.right:hover {
+    transform: translateX(2px);
+}
+
+.slider > i.right:active,
+.slider > i.left:active {
+    transform: translateY(1px);
+}
+
+.slider:hover > div {
+    transform: scale(1.01);
+}
+
+.hoverZoomOff:hover > div {
+    transform: scale(1);
+}
+
+.slider > ul {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    z-index: 4;
+    padding: 0;
+    margin: 0;
+    transform: translateX(-50%);
+}
+
+.slider > ul > li {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    list-style: none;
+    float: left;
+    margin: 10px 10px 0;
+    cursor: pointer;
+    border: 1px solid #fff;
+    -moz-transition: .3s;
+    -o-transition: .3s;
+    -webkit-transition: .3s;
+    transition: .3s;
+}
+
+.slider > ul > .showli {
+    background-color: #7EC03D;
+    -moz-animation: boing .5s forwards;
+    -o-animation: boing .5s forwards;
+    -webkit-animation: boing .5s forwards;
+    animation: boing .5s forwards;
+}
+
+.slider > ul > li:hover {
+    background-color: #7EC03D;
+}
+
+.slider > .show {
+    z-index: 1;
+}
+
+.hideDots > ul {
+    display: none;
+}
+
+.showArrows > .left {
+    left: 0;
+}
+
+.showArrows > .right {
+    right: 0;
+}
+
+.titleBar {
+    z-index: 2;
+    display: inline-block;
+    background: rgba(0,0,0,.5);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    transform: translateY(100%);
+    padding: 20px 30px;
+    transition: .3s;
+    color: #fff;
+}
+
+.titleBar * {
+    transform: translate(-20px, 30px);
+    transition: all 700ms cubic-bezier(0.37, 0.31, 0.2, 0.85) 200ms;
+    opacity: 0;
+}
+
+.titleBarTop .titleBar * {
+    transform: translate(-20px, -30px);
+}
+
+.slider:hover .titleBar,
+.slider:hover .titleBar * {
+    transform: translate(0);
+    opacity: 1;
+}
+
+.titleBarTop .titleBar {
+    top: 0;
+    bottom: initial;
+    transform: translateY(-100%);
+}
+
+.slider > div span {
+    display: block;
+    background: rgba(0,0,0,.5);
+    position: absolute;
+    bottom: 0;
+    color: #fff;
+    text-align: center;
+    padding: 0;
+    width: 100%;
+}
+
+
+@keyframes boing {
+    0% {
+        transform: scale(1.2);
+    }
+    40% {
+        transform: scale(.6);
+    }
+    60% {
+        transform: scale(1.2);
+    }
+    80% {
+        transform: scale(.8);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* -------------------------------------- */
+
+#slider2 {
+    max-width: 30%;
+    margin-right: 20px;
+}
+
+.row2Wrap {
+    display: flex;
+}
+
+.content {
+    padding: 50px;
+    margin-bottom: 100px;
+}
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+h1, h2, h3 {
+    font-family: 'Crimson Text', sans-serif;
+    font-weight: 100;
+}
+body {
+    font: 15px 'Titillium Web', Arial, sans-serif;
+    background: radial-gradient(#121212, #000);
+    height: 100%;
+    color: #aaa;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    padding: 10px 15vw;
+}
+</style>
+    <!-- Slider 1 -->
+<div class="slider" id="slider1">
+    <!-- Slides -->
+    <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.03\ PM.jpeg)"></div>
+    <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.04\ PM.jpeg)"></div>
+    <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.04\ PM\ \(1\).jpeg)"></div>
+    <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.05\ PM.jpeg)"></div>
+  <!-- <div style="background-image:url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/30256/1200_bodie-11.jpg)"></div> 
+    <!-- The Arrows -->
+    <i class="left" class="arrows" style="z-index:2; position:absolute;"><svg viewBox="0 0 100 100">
+            <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z"></path>
+        </svg></i>
+    <i class="right" class="arrows" style="z-index:2; position:absolute;"><svg viewBox="0 0 100 100">
+            <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" transform="translate(100, 100) rotate(180) "></path>
+        </svg></i>
+    <!-- Title Bar -->
+    <span class="titleBar">
+        <h1>RIT ECE 2019-2023</h1>
+    </span>
+</div>
+
+<br>
+
+<div class="row2Wrap">
+    <!-- Slider 2 -->
+    <div class="slider" id="slider2">
+        <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.03\ PM.jpeg)"></div>
+        <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.04\ PM.jpeg)"></div>
+        <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.04\ PM\ \(1\).jpeg)"></div>
+        <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.13.05\ PM.jpeg)"></div>
+
+        <i class="left" class="arrows" style="z-index:2; position:absolute;">
+            <svg viewBox="0 0 100 100">
+                <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z"></path>
+            </svg>
+        </i>
+        <i class="right" class="arrows" style="z-index:2; position:absolute;">
+            <svg viewBox="0 0 100 100">
+                <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" transform="translate(100, 100) rotate(180) "></path>
+            </svg>
+        </i>
+        <!-- Title Bar -->
+        <!--     
+        <span class="titleBar"> 
+            <h1>I am like a leaf in the wind.</h1> 
+            <p>Watch me soar!</p>
+        </span> 
+        -->
+    </div>
+
+    <!-- <h3>Individual slide text</h3> -->
+
+    <!-- Slider 3 -->
+    <div class="slider" id="slider3">
+        <div style="background-image:url(img/WhatsApp\ Image\ 2023-04-29\ at\ 6.23.05\ PM.jpeg)">
+            <span>
+                <h2>1st year fest</h2>
+            </span>
+        </div>
+        <div style="background-image:url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/30256/1200_110627-8240-Myst.jpg)">
+            <span>
+                <h2>2nd year fest</h2>
+            </span>
+        </div>
+        <div style="background-image:url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/30256/1200_bodie-11.jpg)">
+            <span>
+                <h2>final year fest</h2>
+            </span>
+        </div>
+        <!-- The Arrows -->
+        <i class="left" class="arrows" style="z-index:2; position:absolute;"><svg viewBox="0 0 100 100">
+                <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z"></path>
+            </svg></i>
+        <i class="right" class="arrows" style="z-index:2; position:absolute;">
+            <svg viewBox="0 0 100 100">
+                <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" transform="translate(100, 100) rotate(180) "></path>
+            </svg></i>
+        <!-- Title Bar -->
+        <!--     <span class="titleBar">
+        <h1>I am like a leaf in the wind.</h1> 
+        <p>Watch me soar!</p>
+    </span> -->
+    </div>
+
+</div>
+<style>
+    .btn {
+  padding: 15px 40px;
+  font: 14px "Rubik", sans-serif;
+  text-decoration: none;
+  font-weight:700;
+  background:rgba(0, 0, 0, 0.1);
+  background-size: 300%;
+  display: inline-block;
+  color: #f44ea4;
+  border-radius: 5px;
+  border: 1px solid #f44ea4;
+  position: relative;
+  cursor: pointer;
+  /*animation: glowing 8s linear infinite;*/
+  text-transform: uppercase;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 1px;
+  &:after {
+    content: " ";
+    position: center;
+    border-radius: inherit;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    top: -6px;
+    background: inherit;
+    background-size: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    filter: blur(16px);
+    animation: glowing 7s linear infinite;
+    transform: translateZ(0);
+  }
+  &:hover {
+   
+  background: 
+    linear-gradient(80deg, 
+      #e662e6, 
+      #d1016c, 
+      #d70b25, 
+      #e662e6);
+  background-size: 300%;
+  border:none;
+  color: #fff;
+  
+  /*animation: glowing 8s linear infinite;*/
+  
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  
+    &:after {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes glowing {
+  100% {
+    background-position: -400%;
+  }
+}
+</style>
+<center>
+<div class="content">
+</center>
+</div>
+<center>
+<div class="btn"><a style="text-decoration:none" href="ECE-c.html">Section- C</a></div>
+</center>
+<style> /*
+
+    All grid code is placed in a 'supports' rule (feature query) at the bottom of the CSS (Line 77). 
+            
+    The 'supports' rule will only run if your browser supports CSS grid.
+    
+    Flexbox is used as a fallback so that browsers which don't support grid will still recieve an identical layout.
+    
+    */
+    
+    @import url(https://fonts.googleapis.com/css?family=Montserrat:500);
+    
+    :root {
+        /* Base font size */
+        font-size: 10px;
+    }
+    
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+    
+    body {
+        min-height: 100vh;
+        background-color: #fafafa;
+    }
+    
+    .container {
+        max-width: 100rem;
+        margin: 0 auto;
+        padding: 0 2rem 2rem;
+    }
+    
+    .heading {
+        font-family: "Montserrat", Arial, sans-serif;
+        font-size: 4rem;
+        font-weight: 500;
+        line-height: 1.5;
+        text-align: center;
+        padding: 3.5rem 0;
+        color: #1a1a1a;
+    }
+    
+    .heading span {
+        display: block;
+    }
+    
+    .gallery {
+        display: flex;
+        flex-wrap: wrap;
+        /* Compensate for excess margin on outer gallery flex items */
+        margin: -1rem -1rem;
+    }
+    
+    .gallery-item {
+        /* Minimum width of 24rem and grow to fit available space */
+        flex: 1 0 24rem;
+        /* Margin value should be half of grid-gap value as margins on flex items don't collapse */
+        margin: 1rem;
+        box-shadow: 0.3rem 0.4rem 0.4rem rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+    
+    .gallery-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 400ms ease-out;
+    }
+    
+    .gallery-image:hover {
+        transform: scale(1.15);
+    }
+    
+    /*
+    
+    The following rule will only run if your browser supports CSS grid.
+    
+    Remove or comment-out the code block below to see how the browser will fall-back to flexbox styling. 
+    
+    */
+    
+    @supports (display: grid) {
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+            grid-gap: 2rem;
+        }
+    
+        .gallery,
+        .gallery-item {
+            margin: 0;
+        }
+    }
+    </style>
+<div class="container">
+
+	<h1 class="heading"  style="color:blue">our memories  <span  style="color:red">& 2019-2023 </span></h1>
+
+	<div class="gallery">
+
+		<div class="gallery-item">
+			<img class="gallery-image" src="img/WhatsApp Image 2023-04-29 at 6.44.28 PM.jpeg">
+		</div>
+
+		<div class="gallery-item">
+			<img class="gallery-image" src="img/WhatsApp Image 2023-04-29 at 6.44.28 PM (2).jpeg" >
+		</div>
+
+		<div class="gallery-item">
+			<img class="gallery-image" src="img/WhatsApp Image 2023-04-29 at 6.44.28 PM (1).jpeg">
+		</div>
+
+		<div class="gallery-item">
+			<img class="gallery-image" src="img/WhatsApp Image 2023-04-29 at 6.44.27 PM.jpeg" alt="">
+		</div>
+
+		<div class="gallery-item">
+			<img class="gallery-image" src="img/WhatsApp Image 2023-04-29 at 6.44.27 PM (1).jpeg" alt="">
+		</div>
+
+		<div class="gallery-item">
+			<img class="gallery-image" src="img/WhatsApp Image 2023-04-29 at 6.13.05 PM.jpeg" alt="">
+		</div>
+
+	</div>
+
+</div>
+</body>
+</html>
